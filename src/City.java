@@ -60,8 +60,22 @@ public class City {
         this.population = population;
     }
 
+    public String formatedToString(){
+        return country + "--" + city + "--" + lat + "--" + lng + "--" + population;
+    }
+
     @Override
     public String toString() {
-        return country + "--" + city + "--" + lat + "--" + lng + "--" + population;
+        return city;
+    }
+
+    @Override
+    public int hashCode() {
+        return toString().hashCode();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return (obj instanceof City) && (this.formatedToString().equals(((City) obj).formatedToString()));
     }
 }
