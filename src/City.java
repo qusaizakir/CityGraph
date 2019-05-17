@@ -60,7 +60,11 @@ public class City {
         this.population = population;
     }
 
-    public String formatedToString(){
+    public String getCoordinatesString(){
+        return lng + "," + lat;
+    }
+
+    public String formattedToString(){
         return country + "--" + city + "--" + lat + "--" + lng + "--" + population;
     }
 
@@ -76,6 +80,6 @@ public class City {
 
     @Override
     public boolean equals(Object obj) {
-        return (obj instanceof City) && (this.formatedToString().equals(((City) obj).formatedToString()));
+        return (obj instanceof City) && (this.formattedToString().equals(((City) obj).formattedToString()));
     }
 }

@@ -5,7 +5,7 @@ import java.util.List;
 
 public class GraphHelper {
 
-    public static SimpleWeightedGraph createWeightedGraph(List<City> cityList){
+    public static SimpleWeightedGraph createWeightedGraphStraightLineDistance(List<City> cityList){
         SimpleWeightedGraph<City, DefaultWeightedEdge> graph = new SimpleWeightedGraph<>(DefaultWeightedEdge.class);
 
         //Add each city as a vertex
@@ -14,6 +14,8 @@ public class GraphHelper {
             graph.addVertex(c);
         }
 
+        int count = 0;
+
         for(int i=0; i<cityList.size(); i++){
             for (City city : cityList) {
                 if (!cityList.get(i).equals(city)) {
@@ -21,8 +23,11 @@ public class GraphHelper {
                     graph.setEdgeWeight(cityList.get(i), city,
                             GraphCalculationsHelper.distanceLatLngByCity(cityList.get(i), city));
                 }
+
             }
         }
+
+        System.out.println(count);
 
         return graph;
     }
