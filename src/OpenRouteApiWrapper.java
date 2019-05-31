@@ -1,6 +1,3 @@
-import com.google.gson.JsonObject;
-import okhttp3.OkHttpClient;
-import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -39,12 +36,14 @@ public class OpenRouteApiWrapper {
                     summary.setFromCity(fromCity);
                     summary.setToCity(toCity);
                     callbacks.OnSummarySuccess(summary);
+                    call.cancel();
                 }
             }
 
             @Override
             public void onFailure(Call<Directions> call, Throwable throwable) {
                 System.out.println("Failure code: " + throwable.getMessage());
+                call.cancel();
             }
 
 
@@ -69,7 +68,7 @@ public class OpenRouteApiWrapper {
                     }
                 }else{
                     Matrix matrix = response.body();
-                    callbacks.OnMatrixSuccess(matrix);
+                    callbacks.OnDriveMatrixSuccess(matrix);
                 }
             }
 
@@ -78,5 +77,35 @@ public class OpenRouteApiWrapper {
                 System.out.println("Failure code: " + throwable.getMessage());
             }
         });
+    }
+
+    public void getMatrixDistanceByFoot(GPSCityLocations gpsCityLocations){
+
+        Call<Matrix> call = routeApi.getMatrixByFoot(gpsCityLocations);
+
+        call.enqueue(new Callback<Matrix>() {
+            @Override
+            public void onResponse(Call<Matrix> call, Response<Matrix> response) {
+                if(!response.isSuccessful()){
+                    System.out.println("Response message: " + response.message());
+                    System.out.println("Response code: " + response.code());
+                    try {
+                        String error = response.errorBody().string();
+                        System.out.println(error);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }else{
+                    Matrix matrix = response.body();
+                    callbacks.OnFootMatrixSuccess(matrix);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Matrix> call, Throwable throwable) {
+                System.out.println("Failure code: " + throwable.getMessage());
+            }
+        });
+
     }
 }

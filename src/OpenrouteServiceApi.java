@@ -14,4 +14,11 @@ public interface OpenrouteServiceApi {
     })
     @POST("v2/matrix/driving-car")
     Call<Matrix> getMatrixByCar(@Body GPSCityLocations gpsCityLocations);
+
+    @Headers({
+            "Authorization: 5b3ce3597851110001cf6248a8ff237b2fc749d59c870996c11e02f2",
+            "Accept: application/json"
+    })
+    @POST("v2/matrix/foot-walking")
+    Call<Matrix> getMatrixByFoot(@Body GPSCityLocations gpsCityLocations);
 }

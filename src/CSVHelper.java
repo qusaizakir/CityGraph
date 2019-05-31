@@ -3,6 +3,7 @@ import com.opencsv.bean.CsvToBeanBuilder;
 import com.sun.corba.se.impl.orbutil.graph.Graph;
 import org.jgrapht.graph.DefaultWeightedEdge;
 import org.jgrapht.graph.SimpleWeightedGraph;
+import org.jgrapht.graph.WeightedMultigraph;
 import org.jgrapht.io.CSVExporter;
 import org.jgrapht.io.CSVFormat;
 import org.jgrapht.io.ComponentNameProvider;
@@ -22,6 +23,7 @@ public class CSVHelper {
     private static final String PATH = "Resources/";
     private static final String EXT = ".csv";
     private static ComponentNameProvider<City> vertexIdProvider = city -> city.getCity();
+    private static ComponentNameProvider<DistanceEdge> edgeIdProvider = distanceEdge -> distanceEdge.getLabel();
 
     public static List<City> cityListByCountryName(String country){
         List<City> cityList;
@@ -44,7 +46,30 @@ public class CSVHelper {
     public static void exportGraphToCSV(SimpleWeightedGraph graph, String fileName){
         String path = PATH + fileName + EXT;
 
-        CSVExporter<City, DefaultWeightedEdge> exporter = new CSVExporter(CSVFormat.EDGE_LIST);
+        CSVExporter<City, DistanceEdge> exporter = new CSVExporter(CSVFormat.EDGE_LIST);
+        exporter.setVertexIDProvider(vertexIdProvider);
+        exporter.setParameter(EDGE_WEIGHTS, true);
+
+        Writer writer = null;
+        try {
+            writer = new FileWriter(path);
+            exporter.exportGraph(graph, writer);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }finally {
+            try {
+                writer.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public static void exportGraphToCSV(WeightedMultigraph graph, String fileName){
+        String path = PATH + fileName + EXT;
+
+        CSVExporter<City, DistanceEdge> exporter = new CSVExporter(CSVFormat.EDGE_LIST);
+        exporter.setEdgeIDProvider(edgeIdProvider);
         exporter.setVertexIDProvider(vertexIdProvider);
         exporter.setParameter(EDGE_WEIGHTS, true);
 

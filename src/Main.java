@@ -1,4 +1,5 @@
 import org.jgrapht.graph.SimpleWeightedGraph;
+import org.jgrapht.graph.WeightedMultigraph;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -6,6 +7,8 @@ public class Main{
 
     private static OpenRouteApiWrapper apiWrapper;
     private static List<City> cityList;
+    private static Matrix driveMatrix;
+    private static Matrix footMatrix;
 
     public static void main(String[] args){
 
@@ -13,9 +16,10 @@ public class Main{
         //Use the format "https://simplemaps.com/static/data/country-cities/gb/gb.csv" to download a countries .csv data file
         //TODO use opencsv to delete irrelevant cols and cities under a specific population <10k
         //TODO use openstreetmaps to find routes between cities.
-
         //TODO use the matrix endpoint rather than the directions endpoint (too many directions requests)
         //TODO graph is undirected so export graph removes all duplicates (A -> B == B -> A) account for this?
+        //TODO add multiple edges (one for driving and one for walking?)
+        //TODO
 
         //Response from API callbacks
         apiWrapper = new OpenRouteApiWrapper(new OpenRouteAPICallbacks() {
@@ -25,10 +29,18 @@ public class Main{
             }
 
             @Override
-            public void OnMatrixSuccess(Matrix matrix) {
+            public void OnDriveMatrixSuccess(Matrix matrix) {
                 //Create a graph from the distance matrix and export graph to .csv
-                SimpleWeightedGraph drivingGraph = GraphHelper.createWeightedGraphDrivingDistance(cityList, matrix.getDistances());
-                CSVHelper.exportGraphToCSV(drivingGraph, "mali_driving_distance");
+                //SimpleWeightedGraph drivingGraph = GraphHelper.createWeightedGraphDrivingDistance(cityList, matrix.getDistances());
+                //CSVHelper.exportGraphToCSV(drivingGraph, "mali_driving_distance");
+                driveMatrix = matrix;
+                System.out.println("Driving " + matrix.getDistances());
+            }
+
+            @Override
+            public void OnFootMatrixSuccess(Matrix matrix) {
+                footMatrix = matrix;
+                System.out.println("Foot " + matrix.getDistances());
             }
         });
 
@@ -41,8 +53,23 @@ public class Main{
         //------ Test method that retrieves directions data from API ------
         testDirectionAPI(cityList);
 
-        //------ Method that retrieves Matrix data from API from given CityList ------
-        distanceMatrixAPI(cityList);
+        //------ Method that retrieves Matrix data for driving and walking from API from given CityList ------
+        driveAndFootDistanceMatrixAPI(cityList);
+
+
+        boolean flag = true;
+
+        while (flag) {
+            System.out.println("Drive " + (driveMatrix == null));
+            System.out.println("Foot " + (footMatrix == null));
+            if (driveMatrix != null && footMatrix != null) {
+                flag = false;
+                WeightedMultigraph drivingGraph = GraphHelper.createWeightedGraphDrivingAndFootDistance(cityList, driveMatrix.getDistances(), footMatrix.getDistances());
+                CSVHelper.exportGraphToCSV(drivingGraph, "mali_driving_foot_distance");
+                System.out.println("Completed");
+                System.exit(4);
+            }
+        }
 
     }
 
@@ -53,7 +80,7 @@ public class Main{
         CSVHelper.exportGraphToCSV(strGraph, "mali_str_distance");
     }
 
-    private static void distanceMatrixAPI(List<City> cityList){
+    private static void driveAndFootDistanceMatrixAPI(List<City> cityList){
 
         //Create a list of list of GPS to send as parameter to matrix endpoint
         List<List<Double>> cityGPSList = new ArrayList<>();
@@ -68,6 +95,7 @@ public class Main{
         GPSCityLocations gpsCityLocations = new GPSCityLocations(cityGPSList,GPSCityLocations.DISTANCE, GPSCityLocations.KM);
         //Send POST request with body
         apiWrapper.getMatrixDistanceByCar(gpsCityLocations);
+        apiWrapper.getMatrixDistanceByFoot(gpsCityLocations);
     }
 
     private static void testDirectionAPI(List<City> cityList) {

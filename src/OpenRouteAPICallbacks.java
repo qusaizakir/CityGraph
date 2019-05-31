@@ -1,5 +1,6 @@
 public interface OpenRouteAPICallbacks {
 
     void OnSummarySuccess(Summary summary);
-    void OnMatrixSuccess(Matrix matrix);
+    void OnDriveMatrixSuccess(Matrix matrix);
+    void OnFootMatrixSuccess(Matrix matrix);
 }
