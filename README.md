@@ -1,6 +1,6 @@
 # City Graph
 
-A java project that produces graphs that export as CSV files that contain multiple distance metrics such as driving, walking and straight-line. The data is taken from SimpleMaps and OpenRouteService is used to calculate distances.
+City graph takes location data (cities) and creates a fully connected graph using different distance metrics as edges. These metrics include as driving, walking and straight-line distances. The country data is taken from SimpleMaps, OpenRouteService is used to calculate distances.
 
 ## Getting Started
 
