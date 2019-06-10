@@ -14,7 +14,7 @@ A java project that produces graphs that export as CSV files that contain multip
 
 ## Authors
 
-* **Qusai Zakir** - [Portfolio](https://qusaizakir.uk)
+**Qusai Zakir** - [Portfolio](https://qusaizakir.uk)
 
 ## License
 
