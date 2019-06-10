@@ -1,5 +1,6 @@
 package main.OpenRouteAPI;
 
+import okhttp3.OkHttpClient;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -7,79 +8,68 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 import java.io.IOException;
+import java.util.concurrent.TimeUnit;
 
 public class OpenRouteApiWrapper {
 
-    public static final String API_KEY = "5b3ce3597851110001cf6248a8ff237b2fc749d59c870996c11e02f2";
+    private String API_KEY;
     private Retrofit retrofit;
     private OpenRouteServiceApi routeApi;
     private OpenRouteAPICallbacks callbacks;
 
-    public OpenRouteApiWrapper(OpenRouteAPICallbacks callbacks){
-        this.callbacks = callbacks;
+    public OpenRouteApiWrapper(String API_KEY) {
+        OkHttpClient.Builder client = new OkHttpClient.Builder();
+        client.connectTimeout(25, TimeUnit.SECONDS);
+        client.readTimeout(25, TimeUnit.SECONDS);
+        client.writeTimeout(25, TimeUnit.SECONDS);
+        client.callTimeout(25, TimeUnit.SECONDS);
+
         retrofit = new Retrofit.Builder()
                 .baseUrl("https://api.openrouteservice.org/")
                 .addConverterFactory(GsonConverterFactory.create())
+                .client(client.build())
                 .build();
         routeApi = retrofit.create(OpenRouteServiceApi.class);
+        this.API_KEY = API_KEY;
+
     }
 
-    public void getMatrixDistanceByCar(MatrixBody matrixBody){
+    public MatrixResponse getMatrixDistanceByCar(MatrixBody matrixBody){
 
-        Call<MatrixResponse> call = routeApi.getMatrixByCar(matrixBody);
-
-        call.enqueue(new Callback<MatrixResponse>() {
-            @Override
-            public void onResponse(Call<MatrixResponse> call, Response<MatrixResponse> response) {
-                if(!response.isSuccessful()){
-                    System.out.println("Response message: " + response.message());
-                    System.out.println("Response code: " + response.code());
-                    try {
-                        String error = response.errorBody().string();
-                        System.out.println(error);
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }else{
-                    MatrixResponse matrixResponse = response.body();
-                    callbacks.OnDriveMatrixSuccess(matrixResponse);
-                }
+        Call<MatrixResponse> call = routeApi.getMatrixByCar(matrixBody, API_KEY);
+        MatrixResponse matrixResponse = null;
+        Response response = null;
+        try {
+            response = call.execute();
+            if(response.isSuccessful()){
+                matrixResponse = (MatrixResponse) response.body();
+            }else{
+                System.out.println("Error: " + response.errorBody().string());
             }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
-            @Override
-            public void onFailure(Call<MatrixResponse> call, Throwable throwable) {
-                System.out.println("Failure code: " + throwable.getMessage());
-            }
-        });
+        return matrixResponse;
     }
 
-    public void getMatrixDistanceByFoot(MatrixBody matrixBody){
+    public MatrixResponse getMatrixDistanceByFoot(MatrixBody matrixBody){
 
-        Call<MatrixResponse> call = routeApi.getMatrixByFoot(matrixBody);
-
-        call.enqueue(new Callback<MatrixResponse>() {
-            @Override
-            public void onResponse(Call<MatrixResponse> call, Response<MatrixResponse> response) {
-                if(!response.isSuccessful()){
-                    System.out.println("Response message: " + response.message());
-                    System.out.println("Response code: " + response.code());
-                    try {
-                        String error = response.errorBody().string();
-                        System.out.println(error);
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }else{
-                    MatrixResponse matrixResponse = response.body();
-                    callbacks.OnFootMatrixSuccess(matrixResponse);
-                }
+        Call<MatrixResponse> call = routeApi.getMatrixByFoot(matrixBody, API_KEY);
+        MatrixResponse matrixResponse = null;
+        Response response;
+        try {
+            response = call.execute();
+            if(response.isSuccessful()){
+                matrixResponse = (MatrixResponse) response.body();
+            }else{
+                System.out.println("Error: " + response.errorBody().string());
             }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
-            @Override
-            public void onFailure(Call<MatrixResponse> call, Throwable throwable) {
-                System.out.println("Failure code: " + throwable.getMessage());
-            }
-        });
+        return matrixResponse;
 
     }
 }

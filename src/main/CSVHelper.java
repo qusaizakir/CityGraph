@@ -10,27 +10,26 @@ import org.jgrapht.io.CSVExporter;
 import org.jgrapht.io.CSVFormat;
 import org.jgrapht.io.ComponentNameProvider;
 
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.Reader;
-import java.io.Writer;
+import java.io.*;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import static org.jgrapht.io.CSVFormat.Parameter.EDGE_WEIGHTS;
 
 public class CSVHelper {
 
-    private static final String PATH = "Resources/";
+    private static final String PATH = Paths.get("").toAbsolutePath().toString();
     private static final String EXT = ".csv";
     private static ComponentNameProvider<City> vertexIdProvider = city -> city.getCity();
     private static ComponentNameProvider<DistanceEdge> edgeIdProvider = distanceEdge -> distanceEdge.getLabel();
 
-    public static List<City> cityListByCountryName(String country){
+    public static List<City> cityListByCountryName(String country, CSVCityLimit cityLimit){
         List<City> cityList;
-        String path = PATH + country + EXT;
+        String path = PATH + File.separator + country + EXT;
         try {
             Reader reader = Files.newBufferedReader(Paths.get(path));
             CsvToBean<City> csvToBean = new CsvToBeanBuilder(reader)
@@ -43,11 +42,11 @@ public class CSVHelper {
             e.printStackTrace();
             return null;
         }
-        return cityList;
+        return removeCitiesBasedOnFilter(cityList, cityLimit);
     }
 
     public static void exportGraphToDefaultCSVFormat(SimpleWeightedGraph graph, String fileName){
-        String path = PATH + fileName + EXT;
+        String path = PATH + File.separator + fileName + EXT;
 
         CSVExporter<City, DistanceEdge> exporter = new CSVExporter(CSVFormat.EDGE_LIST);
         exporter.setVertexIDProvider(vertexIdProvider);
@@ -69,7 +68,7 @@ public class CSVHelper {
     }
 
     public static void exportGraphToDefaultCSVFormat(WeightedMultigraph graph, String fileName){
-        String path = PATH + fileName + EXT;
+        String path =  PATH + File.separator + fileName + EXT;
 
         CSVExporter<City, DistanceEdge> exporter = new CSVExporter(CSVFormat.EDGE_LIST);
         exporter.setEdgeIDProvider(edgeIdProvider);
@@ -92,7 +91,7 @@ public class CSVHelper {
     }
 
     public static void exportGraphToCustomCSVFormat(WeightedMultigraph graph, String fileName){
-        String path = PATH + fileName + EXT;
+        String path = PATH + File.separator + fileName + EXT;
 
         ArrayList<GraphExportBean> beans = formatGraphForExport(graph);
 
@@ -119,8 +118,8 @@ public class CSVHelper {
     private static ArrayList<GraphExportBean> formatGraphForExport(WeightedMultigraph graph){
         ArrayList<GraphExportBean> exportBeans = new ArrayList<>();
 
-        //Get edges and vertex from graph and convert to lists
-        ArrayList<DistanceEdge> edges = new ArrayList<>();
+        //Get edges from graph and convert to list
+        List<DistanceEdge> edges = new ArrayList<>();
         edges.addAll(graph.edgeSet());
 
         //Use Graph Export Bean as a template for exporting in correct format
@@ -143,5 +142,25 @@ public class CSVHelper {
         }
 
         return exportBeans;
+    }
+
+    private static List<City> removeCitiesBasedOnFilter(List<City> cityList, CSVCityLimit cityLimit){
+        int pop = cityLimit.getPopulation();
+        int limit = cityLimit.getCityLimit();
+
+        //Remove cities below pop level
+        cityList.removeIf(c -> c.getPopulation() < pop);
+
+        //If cities over limit, then add only limited number to new list (highest pop first)
+        if(cityList.size() > limit){
+            List<City> newList = new ArrayList<>();
+            for(int i=0; i<limit; i++){
+                newList.add(cityList.get(i));
+            }
+            return newList;
+        }else{
+            return cityList;
+        }
+
     }
 }
