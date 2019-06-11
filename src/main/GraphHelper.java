@@ -68,26 +68,31 @@ public class GraphHelper {
             graph.addVertex(c);
         }
 
+        //If the cities are the same, do not add an edge (self loop)
+        //If the cities already have an edge (A-B == B-A), do not add an edge
         for(int i=0; i<cityList.size(); i++){
             for (int j=0; j<cityList.size(); j++) {
+
                 if (!cityList.get(i).equals(cityList.get(j))) {
+                    if (graph.getEdge(cityList.get(i), cityList.get(j)) == null) {
 
-                    DistanceEdge eDrive = new DistanceEdge(DistanceEdge.DRIVING_CAR);
-                    graph.addEdge(cityList.get(i), cityList.get(j), eDrive);
-                    DistanceEdge eFoot = new DistanceEdge(DistanceEdge.FOOT);
-                    graph.addEdge(cityList.get(i), cityList.get(j), eFoot);
+                        DistanceEdge eDrive = new DistanceEdge(DistanceEdge.DRIVING_CAR);
+                        graph.addEdge(cityList.get(i), cityList.get(j), eDrive);
+                        DistanceEdge eFoot = new DistanceEdge(DistanceEdge.FOOT);
+                        graph.addEdge(cityList.get(i), cityList.get(j), eFoot);
 
-                    //Add two sets of edges, one for driving and one for walking
-                    if(driveDistance.get(i).get(j) != null){
-                        graph.setEdgeWeight(eDrive, driveDistance.get(i).get(j));
-                    }else{
-                        graph.setEdgeWeight(eDrive, -1);
-                    }
+                        //Add two sets of edges, one for driving and one for walking
+                        if(driveDistance.get(i).get(j) != null){
+                            graph.setEdgeWeight(eDrive, driveDistance.get(i).get(j));
+                        }else{
+                            graph.setEdgeWeight(eDrive, -1);
+                        }
 
-                    if(footDistance.get(i).get(j) != null){
-                        graph.setEdgeWeight(eFoot, footDistance.get(i).get(j));
-                    }else{
-                        graph.setEdgeWeight(eFoot, -1);
+                        if(footDistance.get(i).get(j) != null){
+                            graph.setEdgeWeight(eFoot, footDistance.get(i).get(j));
+                        }else{
+                            graph.setEdgeWeight(eFoot, -1);
+                        }
                     }
                 }
             }

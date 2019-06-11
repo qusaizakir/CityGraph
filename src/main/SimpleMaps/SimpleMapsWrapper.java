@@ -22,7 +22,7 @@ public class SimpleMapsWrapper {
 
         String name = countryCode + CSV;
         String url = SIMPLE_MAPS_URL + "/" + countryCode + "/" + countryCode + CSV;
-        System.out.println(url);
+        System.out.println("SimpleMaps URL for " + countryCode + " :" + url);
 
         Call<ResponseBody> call = downloadClient.getCountryCSVByCode(url);
         try {

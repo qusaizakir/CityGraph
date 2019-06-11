@@ -84,8 +84,8 @@ public class Main{
         MatrixBody matrixBody = new MatrixBody(cityGPSList, MatrixBody.DISTANCE, MatrixBody.KM);
         //Send POST request with body
         driveMatrixResponse = openRouteWrapper.getMatrixDistanceByCar(matrixBody);
-        System.out.println("Driver distances completed: " + ((System.currentTimeMillis() - START) /1000) + " seconds");
+        System.out.println("Drive distances API request completed: " + ((System.currentTimeMillis() - START) /1000) + " seconds");
         footMatrixResponse = openRouteWrapper.getMatrixDistanceByFoot(matrixBody);
-        System.out.println("Foot distances completed: " + ((System.currentTimeMillis() - START) /1000) + " seconds");
+        System.out.println("Foot distances API request completed: " + ((System.currentTimeMillis() - START) /1000) + " seconds");
     }
 }

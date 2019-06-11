@@ -42,7 +42,12 @@ public class CSVHelper {
             e.printStackTrace();
             return null;
         }
-        return removeCitiesBasedOnFilter(cityList, cityLimit);
+
+        System.out.println("The number of cities before filtering: " + cityList.size());
+        List<City> citiesEdited = removeCitiesBasedOnFilter(cityList, cityLimit);
+        System.out.println("The number of cities after filtering: " + citiesEdited.size());
+        return citiesEdited;
+
     }
 
     public static void exportGraphToDefaultCSVFormat(SimpleWeightedGraph graph, String fileName){
@@ -140,7 +145,6 @@ public class CSVHelper {
                 exportBeans.add(bean);
             }
         }
-
         return exportBeans;
     }
 

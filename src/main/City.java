@@ -65,16 +65,12 @@ import com.opencsv.bean.CsvBindByName;
         return lng + "," + lat;
     }
 
-    public String formattedToString(){
-        return country + "--" + city + "--" + lat + "--" + lng + "--" + population;
-    }
-
     @Override
     public String toString() {
         return city;
     }
 
-    @Override
+    /*@Override
     public int hashCode() {
         return toString().hashCode();
     }
@@ -82,5 +78,5 @@ import com.opencsv.bean.CsvBindByName;
     @Override
     public boolean equals(Object obj) {
         return (obj instanceof City) && (this.formattedToString().equals(((City) obj).formattedToString()));
-    }
+    }*/
 }
