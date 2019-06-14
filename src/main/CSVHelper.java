@@ -1,7 +1,6 @@
 package main;
 
 import com.opencsv.bean.*;
-import com.opencsv.bean.comparator.LiteralComparator;
 import com.opencsv.exceptions.CsvDataTypeMismatchException;
 import com.opencsv.exceptions.CsvRequiredFieldEmptyException;
 import org.jgrapht.graph.SimpleWeightedGraph;
@@ -12,10 +11,8 @@ import org.jgrapht.io.ComponentNameProvider;
 
 import java.io.*;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import static org.jgrapht.io.CSVFormat.Parameter.EDGE_WEIGHTS;
