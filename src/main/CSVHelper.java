@@ -72,29 +72,6 @@ public class CSVHelper {
         }
     }
 
-    public static void exportGraphToDefaultCSVFormat(WeightedMultigraph graph, String fileName){
-        String path =  PATH + File.separator + fileName + EXT;
-
-        CSVExporter<City, DistanceEdge> exporter = new CSVExporter(CSVFormat.EDGE_LIST);
-        exporter.setEdgeIDProvider(edgeIdProvider);
-        exporter.setVertexIDProvider(vertexIdProvider);
-        exporter.setParameter(EDGE_WEIGHTS, true);
-
-        Writer writer = null;
-        try {
-            writer = new FileWriter(path);
-            exporter.exportGraph(graph, writer);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }finally {
-            try {
-                writer.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
     public static void exportGraphToCustomCSVFormat(WeightedMultigraph graph, String fileName){
         String path = PATH + File.separator + fileName + EXT;
 

@@ -3,73 +3,177 @@ import main.OpenRouteAPI.MatrixBody;
 import main.OpenRouteAPI.MatrixResponse;
 import main.OpenRouteAPI.OpenRouteApiWrapper;
 import main.SimpleMaps.SimpleMapsWrapper;
+import org.apache.commons.cli.*;
 import org.jgrapht.graph.SimpleWeightedGraph;
 import org.jgrapht.graph.WeightedMultigraph;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class Main{
 
     private static OpenRouteApiWrapper openRouteWrapper;
     private static SimpleMapsWrapper mapsWrapper;
-    private static List<City> cityList;
-    private static MatrixResponse driveMatrixResponse;
-    private static MatrixResponse footMatrixResponse;
-    private static String countryCode;
     private static String API_KEY;
     private static long START = 0;
 
     public static void main(String[] args){
         START = System.currentTimeMillis();
+        Options options = createCommandLineOptions();
+        parseCommands(options, args);
+    }
 
-        //Set the commandline arguments as API_KEY CountryCode
-        if(args != null && args.length == 2){
-            API_KEY = args[0];
-            countryCode = args[1];
-        }else{
-            System.out.println("Wrong arguments. Enter: API_KEY COUNTRY_CODE");
-            System.exit(9);
+    private static Options createCommandLineOptions() {
+        Options options = new Options();
+        options.addOption("h", "help", false, "Shows help");
+        options.addOption("a", "all", true, "Exports Locations.csv, Routes.csv, and StraightLine.csv with Walk, Drive and StraightLine distance metrics" +
+                " args: API_KEY COUNTRY_CODE POPULATION_LIMIT CITIES_LIMIT");
+        options.addOption("d", "drive", true, "Exports Locations.csv and Routes.csv with Drive distance metric" +
+                " args: API_KEY COUNTRY_CODE POPULATION_LIMIT CITIES_LIMIT");
+        options.addOption("w", "walk", true, "Exports Locations.csv and Routes.csv with Walk distance metric" +
+                " args: API_KEY COUNTRY_CODE POPULATION_LIMIT CITIES_LIMIT");
+        options.addOption("s", "straight", true, "Exports StraightLine.csv with StraightLine metric" +
+                " args: API_KEY COUNTRY_CODE POPULATION_LIMIT CITIES_LIMIT");
+        return options;
+
+    }
+
+    private static void parseCommands(Options options, String[] args) {
+        CommandLineParser parser = new DefaultParser();
+        CommandLine cmd = null;
+        try {
+            cmd = parser.parse( options, args);
+        } catch (ParseException e) {
+            System.out.println("ERROR: Unable to parse command-line arguments "
+                            + Arrays.toString(args) + " due to: " + e);
         }
 
-        //The country to create a graph for:
-        //The maximum number of requests from OpenRoute is 2500 (50 x 50) per request
-        //For any given country with n cites, the total routes is (n)(n-1)
-        //Therefore the maximum number of cities is set at 50
-        //CSVCityLimit class with trim the CSV based on it's given filters (pop & city limit)
-        //Download CSV from SimpleMaps for countryCode (gb)
-        openRouteWrapper = new OpenRouteApiWrapper(API_KEY);
-        mapsWrapper = new SimpleMapsWrapper();
-        mapsWrapper.downloadCountryCSVByCode(countryCode);
+        if(cmd != null){
 
-        //Take country data file and import cities into a list (contains city, country, lat & lng, population)
-        //Use the CSVCityLimit class to select what filters to put on the CSV list (population above 10k)
-        cityList = CSVHelper.cityListByCountryName(countryCode, new CSVCityLimit(10000));
-
-        //------ Method that creates a graph of straight line distances ------
-        straightLineDistanceGraph(cityList);
-
-        //------ Method that retrieves OpenRouteAPI MatrixResponse data for driving and walking from API from given CityList ------
-        driveAndFootDistanceMatrixAPISync(cityList);
-
-        //Once both driving and foot matrix responses have been retrieved, create the locations graph
-        if (driveMatrixResponse != null && footMatrixResponse != null) {
-            WeightedMultigraph drivingGraph = GraphHelper.createWeightedGraphDrivingAndFootDistance(cityList, driveMatrixResponse.getDistances(), footMatrixResponse.getDistances());
-            CSVHelper.exportGraphToCustomCSVFormat(drivingGraph, countryCode + "_locations");
-            System.out.println("Completed");
-            System.exit(4);
-
+            if(cmd.hasOption("a")){
+                System.out.println("This will export Locations.csv, Routes.csv, and StraightLine.csv");
+                System.out.println("With Drive, Walk and StraightLine distance metrics");
+                API_KEY = args[1];
+                String countryCode = args[2];
+                int population = Integer.parseInt(args[3]);
+                int cityLimit = Integer.parseInt(args[4]);
+                List<City> cityList = downloadAndCreateCityList(countryCode, population, cityLimit);
+                driveWalkAndStraightLineMetric(countryCode, cityList);
+            }else if(cmd.hasOption("d")) {
+                System.out.println("This will export Locations.csv and Routes.csv");
+                System.out.println("With Drive distance metric");
+                API_KEY = args[1];
+                String countryCode = args[2];
+                int population = Integer.parseInt(args[3]);
+                int cityLimit = Integer.parseInt(args[4]);
+                List<City> cityList = downloadAndCreateCityList(countryCode, population, cityLimit);
+                driveMetric(countryCode, cityList);
+            }else if(cmd.hasOption("w")){
+                System.out.println("This will export Locations.csv and Routes.csv");
+                System.out.println("With Walk distance metric");
+                API_KEY = args[1];
+                String countryCode = args[2];
+                int population = Integer.parseInt(args[3]);
+                int cityLimit = Integer.parseInt(args[4]);
+                List<City> cityList = downloadAndCreateCityList(countryCode, population, cityLimit);
+                walkMetric(countryCode, cityList);
+            }else if(cmd.hasOption("s")){
+                System.out.println("This will StraightLine.csv");
+                System.out.println("With StraightLine distance metric");
+                API_KEY = args[1];
+                String countryCode = args[2];
+                int population = Integer.parseInt(args[3]);
+                int cityLimit = Integer.parseInt(args[4]);
+                List<City> cityList = downloadAndCreateCityList(countryCode, population, cityLimit);
+                straightMetric(countryCode, cityList);
+                System.out.println("Completed export with Straight distance metric");
+            }else if(cmd.hasOption("h")){
+                HelpFormatter formatter = new HelpFormatter();
+                formatter.printHelp("Command Line Parameters", options);
+            }
         }
     }
 
-    private static void straightLineDistanceGraph(List<City> cityList) {
+    private static List<City> downloadAndCreateCityList(String countryCode, int population, int cityLimit){
+        openRouteWrapper = new OpenRouteApiWrapper(API_KEY);
+        mapsWrapper = new SimpleMapsWrapper();
+        mapsWrapper.downloadCountryCSVByCode(countryCode);
+        List<City> cityList = CSVHelper.cityListByCountryName(countryCode, new CSVCityLimit(population, cityLimit));
+        return cityList;
+    }
+
+    private static void driveWalkAndStraightLineMetric(String countryCode, List<City> cityList){
+
+        straightMetric(countryCode, cityList);
+        MatrixResponse driveMatrixResponse = requestDriveMatrixFromAPI(cityList);
+        MatrixResponse walkMatrixResponse = requestWalkMatrixFromAPI(cityList);
+
+        if (driveMatrixResponse != null && walkMatrixResponse != null) {
+
+            WeightedMultigraph drivingGraph = GraphHelper.createWeightedGraphDrivingAndWalkDistance(cityList, driveMatrixResponse.getDistances(), walkMatrixResponse.getDistances());
+            CSVHelper.exportGraphToCustomCSVFormat(drivingGraph, countryCode + "_locations");
+            System.out.println("Completed export with Driving, Walking and StraightLine distance metrics");
+            System.exit(1);
+        }
+    }
+
+    private static void driveMetric(String countryCode, List<City> cityList){
+
+        MatrixResponse driveMatrixResponse = requestDriveMatrixFromAPI(cityList);
+
+        if (driveMatrixResponse != null) {
+
+            WeightedMultigraph drivingGraph = GraphHelper.createWeightedGraphDrivingDistance(cityList, driveMatrixResponse.getDistances());
+            CSVHelper.exportGraphToCustomCSVFormat(drivingGraph, countryCode + "_locations");
+            System.out.println("Completed export with Driving distance metric");
+            System.exit(2);
+        }
+    }
+
+    private static void walkMetric(String countryCode, List<City> cityList){
+
+        MatrixResponse walkMatrixResponse = requestWalkMatrixFromAPI(cityList);
+
+        if (walkMatrixResponse != null) {
+
+            WeightedMultigraph drivingGraph = GraphHelper.createWeightedGraphWalkingDistance(cityList, walkMatrixResponse.getDistances());
+            CSVHelper.exportGraphToCustomCSVFormat(drivingGraph, countryCode + "_locations");
+            System.out.println("Completed export with Walking distance metric");
+            System.exit(2);
+        }
+    }
+
+    private static void straightMetric(String countryCode, List<City> cityList) {
         //Create a simple weighted graph with data (StraightLine Distance)
         //Export graph file to Resources/test.csv*/
         SimpleWeightedGraph strGraph = GraphHelper.createWeightedGraphStraightLineDistance(cityList);
         CSVHelper.exportGraphToDefaultCSVFormat(strGraph, countryCode + "_straight");
     }
 
-    private static void driveAndFootDistanceMatrixAPISync(List<City> cityList){
+    private static MatrixResponse requestDriveMatrixFromAPI(List<City> cityList){
+        List<List<Double>> cityGPSList = createGPSLocationsList(cityList);
+
+        //Create the body for the POST request (GPS list, Distance, Units)
+        MatrixBody matrixBody = new MatrixBody(cityGPSList, MatrixBody.DISTANCE, MatrixBody.KM);
+        //Send POST request with body
+        MatrixResponse driveMatrixResponse = openRouteWrapper.getMatrixDistanceByCar(matrixBody);
+        System.out.println("Drive distances API request completed: " + ((System.currentTimeMillis() - START) /1000) + " seconds");
+        return driveMatrixResponse;
+    }
+
+    private static MatrixResponse requestWalkMatrixFromAPI(List<City> cityList){
+        List<List<Double>> cityGPSList = createGPSLocationsList(cityList);
+
+        //Create the body for the POST request (GPS list, Distance, Units)
+        MatrixBody matrixBody = new MatrixBody(cityGPSList, MatrixBody.DISTANCE, MatrixBody.KM);
+        //Send POST request with body
+        MatrixResponse footMatrixResponse = openRouteWrapper.getMatrixDistanceByFoot(matrixBody);
+        System.out.println("Foot distances API request completed: " + ((System.currentTimeMillis() - START) /1000) + " seconds");
+        return footMatrixResponse;
+    }
+
+    private static List<List<Double>> createGPSLocationsList(List<City> cityList) {
 
         //Create a list of list of GPS to send as parameter to matrix endpoint
         List<List<Double>> cityGPSList = new ArrayList<>();
@@ -79,13 +183,6 @@ public class Main{
             list.add(c.getLat());
             cityGPSList.add(list);
         }
-
-        //Create the body for the POST request (GPS list, Distance, Units)
-        MatrixBody matrixBody = new MatrixBody(cityGPSList, MatrixBody.DISTANCE, MatrixBody.KM);
-        //Send POST request with body
-        driveMatrixResponse = openRouteWrapper.getMatrixDistanceByCar(matrixBody);
-        System.out.println("Drive distances API request completed: " + ((System.currentTimeMillis() - START) /1000) + " seconds");
-        footMatrixResponse = openRouteWrapper.getMatrixDistanceByFoot(matrixBody);
-        System.out.println("Foot distances API request completed: " + ((System.currentTimeMillis() - START) /1000) + " seconds");
+        return cityGPSList;
     }
 }

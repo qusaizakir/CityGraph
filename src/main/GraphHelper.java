@@ -29,38 +29,7 @@ public class GraphHelper {
         return graph;
     }
 
-    public static SimpleWeightedGraph createWeightedGraphDrivingDistance(List<City> cityList, List<List<Double>> distances){
-        SimpleWeightedGraph<City, DistanceEdge> graph = new SimpleWeightedGraph<>(DistanceEdge.class);
-
-        //Add each city as a vertex
-        for(City c: cityList){
-            graph.addVertex(c);
-        }
-
-        //Check to see if two cities are not the same
-        //Add an edge between the cities with the driving distance as the weight
-        for(int i=0; i<cityList.size(); i++){
-            for (int j=0; j<cityList.size(); j++) {
-                if (!cityList.get(i).equals(cityList.get(j))) {
-                    graph.addEdge(cityList.get(i), cityList.get(j), new DistanceEdge(DistanceEdge.DRIVING_CAR));
-                    if(distances.get(i).get(j) != null){
-                        graph.setEdgeWeight(cityList.get(i), cityList.get(j),
-                                distances.get(i).get(j));
-                    }else{
-                        graph.setEdgeWeight(cityList.get(i), cityList.get(j),
-                                -1);
-                    }
-
-
-                }
-
-            }
-        }
-
-        return graph;
-    }
-
-    public static WeightedMultigraph createWeightedGraphDrivingAndFootDistance(List<City> cityList, List<List<Double>> driveDistance, List<List<Double>> footDistance){
+    public static WeightedMultigraph createWeightedGraphDrivingAndWalkDistance(List<City> cityList, List<List<Double>> driveDistance, List<List<Double>> footDistance){
         WeightedMultigraph<City, DistanceEdge> graph = new WeightedMultigraph<>(DistanceEdge.class);
 
         //Add each city as a vertex
@@ -100,4 +69,73 @@ public class GraphHelper {
 
         return graph;
     }
+
+    public static WeightedMultigraph createWeightedGraphDrivingDistance(List<City> cityList, List<List<Double>> driveDistance){
+        WeightedMultigraph<City, DistanceEdge> graph = new WeightedMultigraph<>(DistanceEdge.class);
+
+        //Add each city as a vertex
+        for(City c: cityList){
+            graph.addVertex(c);
+        }
+
+        //If the cities are the same, do not add an edge (self loop)
+        //If the cities already have an edge (A-B == B-A), do not add an edge
+        for(int i=0; i<cityList.size(); i++){
+            for (int j=0; j<cityList.size(); j++) {
+
+                if (!cityList.get(i).equals(cityList.get(j))) {
+                    if (graph.getEdge(cityList.get(i), cityList.get(j)) == null) {
+
+                        DistanceEdge eDrive = new DistanceEdge(DistanceEdge.DRIVING_CAR);
+                        graph.addEdge(cityList.get(i), cityList.get(j), eDrive);
+
+                        //Add one edge for driving only
+                        if(driveDistance.get(i).get(j) != null){
+                            graph.setEdgeWeight(eDrive, driveDistance.get(i).get(j));
+                        }else{
+                            graph.setEdgeWeight(eDrive, -1);
+                        }
+
+                    }
+                }
+            }
+        }
+
+        return graph;
+    }
+
+    public static WeightedMultigraph createWeightedGraphWalkingDistance(List<City> cityList, List<List<Double>> driveDistance){
+        WeightedMultigraph<City, DistanceEdge> graph = new WeightedMultigraph<>(DistanceEdge.class);
+
+        //Add each city as a vertex
+        for(City c: cityList){
+            graph.addVertex(c);
+        }
+
+        //If the cities are the same, do not add an edge (self loop)
+        //If the cities already have an edge (A-B == B-A), do not add an edge
+        for(int i=0; i<cityList.size(); i++){
+            for (int j=0; j<cityList.size(); j++) {
+
+                if (!cityList.get(i).equals(cityList.get(j))) {
+                    if (graph.getEdge(cityList.get(i), cityList.get(j)) == null) {
+
+                        DistanceEdge eWalk = new DistanceEdge(DistanceEdge.FOOT);
+                        graph.addEdge(cityList.get(i), cityList.get(j), eWalk);
+
+                        //Add one edge for walking only
+                        if(driveDistance.get(i).get(j) != null){
+                            graph.setEdgeWeight(eWalk, driveDistance.get(i).get(j));
+                        }else{
+                            graph.setEdgeWeight(eWalk, -1);
+                        }
+
+                    }
+                }
+            }
+        }
+
+        return graph;
+    }
+
 }

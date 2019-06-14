@@ -12,6 +12,11 @@ public class CSVCityLimit {
         this.population = population;
     }
 
+    public CSVCityLimit(int population, int cityLimit){
+        this.population = population;
+        this.cityLimit = cityLimit;
+    }
+
     public int getPopulation() {
         return population;
     }

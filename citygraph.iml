@@ -19,5 +19,6 @@
     <orderEntry type="library" name="com.google.code.gson:gson:2.8.5" level="project" />
     <orderEntry type="library" name="com.squareup.retrofit2:retrofit:2.5.0" level="project" />
     <orderEntry type="library" name="com.squareup.okhttp3:logging-interceptor:3.14.2" level="project" />
+    <orderEntry type="library" name="commons-cli-1.4" level="project" />
   </component>
 </module>
