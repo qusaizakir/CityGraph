@@ -58,7 +58,7 @@ public class Main{
                 String countryCode = args[2];
                 int population = Integer.parseInt(args[3]);
                 int cityLimit = Integer.parseInt(args[4]);
-                List<City> cityList = downloadAndCreateCityList(countryCode, population, cityLimit);
+                List<City> cityList = createCityList(countryCode, population, cityLimit);
                 driveWalkAndStraightLineMetric(countryCode, cityList);
             }else if(cmd.hasOption("d")) {
                 System.out.println("This will export Locations.csv and Routes.csv");
@@ -67,7 +67,7 @@ public class Main{
                 String countryCode = args[2];
                 int population = Integer.parseInt(args[3]);
                 int cityLimit = Integer.parseInt(args[4]);
-                List<City> cityList = downloadAndCreateCityList(countryCode, population, cityLimit);
+                List<City> cityList = createCityList(countryCode, population, cityLimit);
                 driveMetric(countryCode, cityList);
             }else if(cmd.hasOption("w")){
                 System.out.println("This will export Locations.csv and Routes.csv");
@@ -76,7 +76,7 @@ public class Main{
                 String countryCode = args[2];
                 int population = Integer.parseInt(args[3]);
                 int cityLimit = Integer.parseInt(args[4]);
-                List<City> cityList = downloadAndCreateCityList(countryCode, population, cityLimit);
+                List<City> cityList = createCityList(countryCode, population, cityLimit);
                 walkMetric(countryCode, cityList);
             }else if(cmd.hasOption("s")){
                 System.out.println("This will StraightLine.csv");
@@ -85,7 +85,7 @@ public class Main{
                 String countryCode = args[2];
                 int population = Integer.parseInt(args[3]);
                 int cityLimit = Integer.parseInt(args[4]);
-                List<City> cityList = downloadAndCreateCityList(countryCode, population, cityLimit);
+                List<City> cityList = createCityList(countryCode, population, cityLimit);
                 straightMetric(countryCode, cityList);
                 System.out.println("Completed export with Straight distance metric");
             }else if(cmd.hasOption("h")){
@@ -95,11 +95,19 @@ public class Main{
         }
     }
 
+    //Use the URL of simpleMaps and country code to download the country cities
     private static List<City> downloadAndCreateCityList(String countryCode, int population, int cityLimit){
         openRouteWrapper = new OpenRouteApiWrapper(API_KEY);
         mapsWrapper = new SimpleMapsWrapper();
         mapsWrapper.downloadCountryCSVByCode(countryCode);
         List<City> cityList = CSVHelper.cityListByCountryName(countryCode, new CSVCityLimit(population, cityLimit));
+        return cityList;
+    }
+
+    //Use the offline download of the cities
+    private static List<City> createCityList(String countryCode, int population, int cityLimit){
+        openRouteWrapper = new OpenRouteApiWrapper(API_KEY);
+        List<City> cityList = CSVHelper.cityListByCountryNameOffline(countryCode, new CSVCityLimit(population, cityLimit));
         return cityList;
     }
 
@@ -112,7 +120,7 @@ public class Main{
         if (driveMatrixResponse != null && walkMatrixResponse != null) {
 
             WeightedMultigraph drivingGraph = GraphHelper.createWeightedGraphDrivingAndWalkDistance(cityList, driveMatrixResponse.getDistances(), walkMatrixResponse.getDistances());
-            CSVHelper.exportGraphToCustomCSVFormat(drivingGraph, countryCode + "_locations");
+            CSVHelper.exportGraphToCustomCSVFormat(drivingGraph, countryCode + "_routes");
             System.out.println("Completed export with Driving, Walking and StraightLine distance metrics");
             System.exit(1);
         }
@@ -125,7 +133,7 @@ public class Main{
         if (driveMatrixResponse != null) {
 
             WeightedMultigraph drivingGraph = GraphHelper.createWeightedGraphDrivingDistance(cityList, driveMatrixResponse.getDistances());
-            CSVHelper.exportGraphToCustomCSVFormat(drivingGraph, countryCode + "_locations");
+            CSVHelper.exportGraphToCustomCSVFormat(drivingGraph, countryCode + "_routes");
             System.out.println("Completed export with Driving distance metric");
             System.exit(2);
         }
@@ -138,7 +146,7 @@ public class Main{
         if (walkMatrixResponse != null) {
 
             WeightedMultigraph drivingGraph = GraphHelper.createWeightedGraphWalkingDistance(cityList, walkMatrixResponse.getDistances());
-            CSVHelper.exportGraphToCustomCSVFormat(drivingGraph, countryCode + "_locations");
+            CSVHelper.exportGraphToCustomCSVFormat(drivingGraph, countryCode + "_routes");
             System.out.println("Completed export with Walking distance metric");
             System.exit(2);
         }

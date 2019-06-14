@@ -16,6 +16,9 @@ import com.opencsv.bean.CsvBindByName;
     private String country;
 
     @CsvBindByName
+    private String iso2;
+
+    @CsvBindByName
     private int population;
 
     public City() {
@@ -25,7 +28,15 @@ import com.opencsv.bean.CsvBindByName;
         return city;
     }
 
-    public void setCity(String city) {
+     public String getIso2() {
+         return iso2;
+     }
+
+     public void setIso2(String iso2) {
+         this.iso2 = iso2;
+     }
+
+     public void setCity(String city) {
         this.city = city;
     }
 
@@ -67,16 +78,7 @@ import com.opencsv.bean.CsvBindByName;
 
     @Override
     public String toString() {
-        return city;
+        return iso2;
     }
 
-    /*@Override
-    public int hashCode() {
-        return toString().hashCode();
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        return (obj instanceof City) && (this.formattedToString().equals(((City) obj).formattedToString()));
-    }*/
 }

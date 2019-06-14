@@ -32,6 +32,7 @@ public class SimpleMapsWrapper {
                 System.out.println("File downloaded");
             }else{
                 System.out.println("Error: Incorrect country code");
+                System.exit(9);
             }
         } catch (IOException e) {
             e.printStackTrace();
