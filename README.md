@@ -50,7 +50,12 @@ The format for these 3 files are as follows:
 ### Arguments
 
 **API_KEY** is needed to access the [OpenRouteService](https://openrouteservice.org/plans/) API
-**COUNTRY_CODE** is the 2 letter code for each country (
+
+**COUNTRY_CODE** is the 2 letter code for each country (currently there are 235 countries included)
+
+**POPULATION_LIMIT** will set the limit to remove cities below this population, unless the population data is not available, then it will be included. 
+
+**CITIES_LIMIT** will set the maximum number of cities. The cities will be removed after population has been removed and will be removed from lowest population first until the limit has been reached.
 
 ### Commands
 
