@@ -11,14 +11,14 @@ City graph takes location data (cities) and creates a fully connected graph usin
 ### Installing
 
 #### Linux
-'sudo apt-get install openjdk-11-jdk' to install openjdk-11
+```sudo apt-get install openjdk-11-jdk``` to install openjdk-11
 
 #### Windows
 Download Java JRE from [Oracle](https://www.oracle.com/technetwork/java/javase/downloads/jre8-downloads-2133155.html)
 
-1. 'java -version' to verify java is installed
+1. ```java -version``` to verify java is installed
 2. Change to citygraph.jar directory
-3. 'java -jar citygraph.jar -h' to display command line parameters
+3. ```java -jar citygraph.jar -h``` to display command line parameters
 
 ## Usage
 The application uses the SimpleMaps worldcities.csv file to find cities from a particular country based off its country code. The 235 country codes that can be used are in [**this file**](https://github.com/qusaizakir/CityGraph/blob/master/listofcountrycodes.csv)
