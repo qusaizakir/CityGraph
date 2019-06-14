@@ -58,7 +58,7 @@ The format for these 3 files are as follows:
 
 **CITIES_LIMIT** will set the maximum number of cities. The cities will be removed after population has been removed and will be removed from lowest population first until the limit has been reached.
 
-**Please note:** The maximum number of cities in one requsest is limited to 50 cities. The API request will fail otherwise due to limits from OpenRouteService. (2500 locations, 50x50) 
+**Please note:** The maximum number of cities in one request is limited to 50 cities. The API request will fail otherwise due to limits from OpenRouteService. (2500 locations, 50x50) 
 
 ### Commands
 
