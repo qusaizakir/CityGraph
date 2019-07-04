@@ -11,14 +11,15 @@ City graph takes location data (cities) and creates a fully connected graph usin
 ### Installing
 
 #### Linux
-'sudo apt-get install openjdk-11-jdk' to install openjdk-11
+```sudo apt-get install openjdk-11-jdk``` to install openjdk-11
 
 #### Windows
 Download Java JRE from [Oracle](https://www.oracle.com/technetwork/java/javase/downloads/jre8-downloads-2133155.html)
 
-1. 'java -version' to verify java is installed
-2. Change to citygraph.jar directory
-3. 'java -jar citygraph.jar -h' to display command line parameters
+1. [Download](https://github.com/qusaizakir/CityGraph/releases) and extract .zip (both citygraph.jar and worldcities.csv must be in the same directory) 
+2. ```java -version``` to verify java is installed
+3. Change to citygraph.jar directory
+4. ```java -jar citygraph.jar -h``` to display command line parameters
 
 ## Usage
 The application uses the SimpleMaps worldcities.csv file to find cities from a particular country based off its country code. The 235 country codes that can be used are in [**this file**](https://github.com/qusaizakir/CityGraph/blob/master/listofcountrycodes.csv)
@@ -58,7 +59,7 @@ The format for these 3 files are as follows:
 
 **CITIES_LIMIT** will set the maximum number of cities. The cities will be removed after population has been removed and will be removed from lowest population first until the limit has been reached.
 
-**Please note:** The maximum number of cities in one requsest is limited to 50 cities. The API request will fail otherwise due to limits from OpenRouteService. (2500 locations, 50x50) 
+**Please note:** The maximum number of cities in one request is limited to 50 cities. The API request will fail otherwise due to limits from OpenRouteService. (2500 locations, 50x50) 
 
 ### Commands
 
@@ -70,6 +71,12 @@ The format for these 3 files are as follows:
 |-s       |*API_KEY COUNTRY_CODE POPULATION_LIMIT CITIES_LIMIT*   | Exports StraightLine.csv with StraightLine metric|
 
 '-h' for help
+
+**_Example_** 
+
+``` java -jar citygraph.jar -a API_KEY us 5000 25 ```
+
+This would output Locations.csv, Routes.csv and Stragight.csv for the top 25 cities from the United states with at least 5000 population.
 
 ## Upcoming features
 
