@@ -14,6 +14,6 @@ public interface OpenRouteServiceApi {
     @Headers({
             "Accept: application/json"
     })
-    @POST("v2/matrix/foot-hiking")
+    @POST("v2/matrix/foot-walking")
     Call<MatrixResponse> getMatrixByFoot(@Body MatrixBody matrixBody, @Header("Authorization") String API_KEY);
 }
