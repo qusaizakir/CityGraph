@@ -41,7 +41,7 @@ The format for these 3 files are as follows:
 
 |name|region|country|lat|lon|location_type|conflict_date|population|
 |:-|:-|:-|:-|:-|:-|:-|:-|
-|*string*|*string*|*string*|*double*|*double*|*string*|*integer*|
+|*string*|*string*|*string*|*double*|*double*|*string*|*string*|*integer*|
 
 **Straight**
 
