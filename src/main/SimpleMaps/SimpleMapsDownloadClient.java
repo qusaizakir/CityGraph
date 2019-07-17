@@ -8,7 +8,7 @@ import retrofit2.http.Url;
 
 public interface SimpleMapsDownloadClient {
 
-    @Streaming
-    @GET
-    Call<ResponseBody> getCountryCSVByCode(@Url String url);
+	@Streaming
+	@GET
+	Call<ResponseBody> getCountryCSVByCode(@Url String url);
 }

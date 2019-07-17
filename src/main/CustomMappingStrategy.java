@@ -1,4 +1,5 @@
 package main;
+
 import org.apache.commons.lang3.StringUtils;
 
 import com.opencsv.bean.BeanField;
@@ -10,34 +11,34 @@ import org.apache.commons.lang3.reflect.FieldUtils;
 class CustomMappingStrategy<T> extends ColumnPositionMappingStrategy<T> {
 
 
-    @Override
-    public String[] generateHeader(T bean) throws CsvRequiredFieldEmptyException {
+	@Override
+	public String[] generateHeader(T bean) throws CsvRequiredFieldEmptyException {
 
-        super.setColumnMapping(new String[ FieldUtils.getAllFields(bean.getClass()).length]);
-        final int numColumns = findMaxFieldIndex();
-        if (!isAnnotationDriven() || numColumns == -1) {
-            return super.generateHeader(bean);
-        }
+		super.setColumnMapping(new String[FieldUtils.getAllFields(bean.getClass()).length]);
+		final int numColumns = findMaxFieldIndex();
+		if (!isAnnotationDriven() || numColumns == -1) {
+			return super.generateHeader(bean);
+		}
 
-        String[] header = new String[numColumns + 1];
+		String[] header = new String[numColumns + 1];
 
-        BeanField<T> beanField;
-        for (int i = 0; i <= numColumns; i++) {
-            beanField = findField(i);
-            String columnHeaderName = extractHeaderName(beanField);
-            header[i] = columnHeaderName;
-        }
-        return header;
-    }
+		BeanField<T> beanField;
+		for (int i = 0; i <= numColumns; i++) {
+			beanField = findField(i);
+			String columnHeaderName = extractHeaderName(beanField);
+			header[i] = columnHeaderName;
+		}
+		return header;
+	}
 
-    private String extractHeaderName(final BeanField<T> beanField) {
-        if (beanField == null || beanField.getField() == null
-                || beanField.getField().getDeclaredAnnotationsByType(CsvBindByName.class).length == 0) {
-            return StringUtils.EMPTY;
-        }
+	private String extractHeaderName(final BeanField<T> beanField) {
+		if (beanField == null || beanField.getField() == null
+				|| beanField.getField().getDeclaredAnnotationsByType(CsvBindByName.class).length == 0) {
+			return StringUtils.EMPTY;
+		}
 
-        final CsvBindByName bindByNameAnnotation = beanField.getField()
-                .getDeclaredAnnotationsByType(CsvBindByName.class)[0];
-        return bindByNameAnnotation.column();
-    }
+		final CsvBindByName bindByNameAnnotation = beanField.getField()
+				.getDeclaredAnnotationsByType(CsvBindByName.class)[0];
+		return bindByNameAnnotation.column();
+	}
 }
