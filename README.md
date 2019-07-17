@@ -35,18 +35,19 @@ The format for these 3 files are as follows:
 
 |From City|To City|Driving Distance|Walking Distance|
 |:-|:-|:-|:-|
-|*name*|*name*|*kilometers*|*kilometers*|
+|*string*|*string*|*kilometers*|*kilometers*|
 
-**Locations** (not yet implemented)
+**Locations**
 
 |name|region|country|lat|lon|location_type|conflict_date|population|
 |:-|:-|:-|:-|:-|:-|:-|:-|
+|*string*|*string*|*string*|*double*|*double*|*string*|*integer*|
 
 **Straight**
 
 |From City|To City|Straight Line Distance|
 |:-|:-|:-|
-|*name*|*name*|*kilometers*|
+|*string*|*string*|*kilometers*|
 
 
 ### Arguments
@@ -68,7 +69,7 @@ The format for these 3 files are as follows:
 |-a       |*API_KEY COUNTRY_CODE POPULATION_LIMIT CITIES_LIMIT*   | Exports Locations.csv, Routes.csv, and StraightLine.csv with Walk, Drive and StraightLine distance metrics|
 |-d       |*API_KEY COUNTRY_CODE POPULATION_LIMIT CITIES_LIMIT*   | Exports Locations.csv and Routes.csv with Drive distance metric|
 |-w       |*API_KEY COUNTRY_CODE POPULATION_LIMIT CITIES_LIMIT*   | Exports Locations.csv and Routes.csv with Walk distance metric|
-|-s       |*API_KEY COUNTRY_CODE POPULATION_LIMIT CITIES_LIMIT*   | Exports StraightLine.csv with StraightLine metric|
+|-s       |*API_KEY COUNTRY_CODE POPULATION_LIMIT CITIES_LIMIT*   | Exports Locations.csv and StraightLine.csv with StraightLine metric|
 
 '-h' for help
 
@@ -76,11 +77,10 @@ The format for these 3 files are as follows:
 
 ``` java -jar citygraph.jar -a API_KEY us 5000 25 ```
 
-This would output Locations.csv, Routes.csv and Stragight.csv for the top 25 cities from the United states with at least 5000 population.
+This would output Locations.csv, Routes.csv and StraightLine.csv for the top 25 cities from the United states with at least 5000 population.
 
 ## Upcoming features
 
-* Add locations.csv export
 * Option to prune graph (remove edges)
 * More control over specific filters for cities
 
