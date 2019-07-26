@@ -29,21 +29,21 @@ The application can output 3 .csv files
 * Straight.csv
 * Routes.csv
 
-The format for these 3 files are as follows:
+The format for these 3 files are as follows (where cc is countrycode):
 
-**Routes** 
+**cc_routes.csv** 
 
 |From City|To City|Driving Distance|Walking Distance|
 |:-|:-|:-|:-|
 |*string*|*string*|*kilometers*|*kilometers*|
 
-**Locations**
+**cc_locations.csv**
 
 |name|region|country|lat|lon|location_type|conflict_date|population|
 |:-|:-|:-|:-|:-|:-|:-|:-|
 |*string*|*string*|*string*|*double*|*double*|*string*|*string*|*integer*|
 
-**Straight**
+**cc_straight.csv**
 
 |From City|To City|Straight Line Distance|
 |:-|:-|:-|
