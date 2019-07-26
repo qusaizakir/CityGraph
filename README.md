@@ -86,7 +86,7 @@ This would output Locations.csv, Routes.csv and StraightLine.csv for the top 25 
 
 ## Built With
 
-* [SimpleMaps](https://simplemaps.com/) - Provides country/city data (lat, lng, population)
+* [SimpleMaps](https://simplemaps.com/) - Provides country/name data (lat, lon, population)
 * [OpenRouteService](http://openrouteservice.org/) - Provides API for distance metrics for driving & walking
 
 ## Authors

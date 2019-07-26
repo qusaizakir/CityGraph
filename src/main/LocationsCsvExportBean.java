@@ -45,8 +45,6 @@ public class LocationsCsvExportBean {
 
 	public LocationsCsvExportBean() {
 		this.region = "";
-		this.locationType = "town";
-		this.conflictDate = 0;
 	}
 
 	public String getRegion() {

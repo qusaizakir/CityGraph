@@ -60,6 +60,7 @@ public class Main {
 				int population = Integer.parseInt(args[3]);
 				int cityLimit = Integer.parseInt(args[4]);
 				List<City> cityList = createCityList(countryCode, population, cityLimit);
+				findAndCombineFromLocationsCity(cityList, countryCode);
 				exportLocationCsv(countryCode, cityList);
 				driveWalkAndStraightLineMetric(countryCode, cityList);
 			} else if (cmd.hasOption("d")) {
@@ -70,6 +71,7 @@ public class Main {
 				int population = Integer.parseInt(args[3]);
 				int cityLimit = Integer.parseInt(args[4]);
 				List<City> cityList = createCityList(countryCode, population, cityLimit);
+				findAndCombineFromLocationsCity(cityList, countryCode);
 				exportLocationCsv(countryCode, cityList);
 				driveMetric(countryCode, cityList);
 			} else if (cmd.hasOption("w")) {
@@ -80,6 +82,7 @@ public class Main {
 				int population = Integer.parseInt(args[3]);
 				int cityLimit = Integer.parseInt(args[4]);
 				List<City> cityList = createCityList(countryCode, population, cityLimit);
+				findAndCombineFromLocationsCity(cityList, countryCode);
 				exportLocationCsv(countryCode, cityList);
 				walkMetric(countryCode, cityList);
 			} else if (cmd.hasOption("s")) {
@@ -90,6 +93,7 @@ public class Main {
 				int population = Integer.parseInt(args[3]);
 				int cityLimit = Integer.parseInt(args[4]);
 				List<City> cityList = createCityList(countryCode, population, cityLimit);
+				findAndCombineFromLocationsCity(cityList, countryCode);
 				exportLocationCsv(countryCode, cityList);
 				straightMetric(countryCode, cityList);
 				System.out.println("Completed export with Straight distance metric");
@@ -100,7 +104,8 @@ public class Main {
 		}
 	}
 
-	//Use the URL of simpleMaps and country code to download the country cities
+	/*Use the URL of simpleMaps and country code to download the country cities
+
 	private static List<City> downloadAndCreateCityList(String countryCode, int population, int cityLimit) {
 		openRouteWrapper = new OpenRouteApiWrapper(API_KEY);
 		mapsWrapper = new SimpleMapsWrapper();
@@ -108,11 +113,31 @@ public class Main {
 		List<City> cityList = CSVHelper.cityListByCountryName(countryCode, new CSVCityLimit(population, cityLimit));
 		return cityList;
 	}
+	*/
 
 	//Use the offline download of the cities to create City List
 	private static List<City> createCityList(String countryCode, int population, int cityLimit) {
 		openRouteWrapper = new OpenRouteApiWrapper(API_KEY);
 		return CSVHelper.cityListByCountryNameOffline(countryCode, new CSVCityLimit(population, cityLimit));
+	}
+
+	//Look for locations.csv file in folder that contains additional/duplicate cities with more accurate data
+	//Combine them to create a new list
+	private static void findAndCombineFromLocationsCity(List<City> cityList, String countryCode){
+		List<City> betterCityList = CSVHelper.cityListByLocationsInput(countryCode);
+		if(betterCityList == null){
+			System.out.println("locations.csv not found");
+			return;
+		}
+
+		//Remove all the duplicate cities from cityList, then add betterCityList to cityList
+		System.out.println("Found locations.csv...");
+		System.out.println("Removing duplicates and combining lists");
+		System.out.println("The number of cities before combining: " + cityList.size());
+		cityList.removeAll(betterCityList);
+		cityList.addAll(betterCityList);
+		System.out.println("The number of cities after combining: " + cityList.size());
+
 	}
 
 	private static void exportLocationCsv(String countryCode, List<City> cityList) {
@@ -195,7 +220,7 @@ public class Main {
 		List<List<Double>> cityGPSList = new ArrayList<>();
 		for (City c : cityList) {
 			List<Double> list = new ArrayList<>();
-			list.add(c.getLng());
+			list.add(c.getLon());
 			list.add(c.getLat());
 			cityGPSList.add(list);
 		}

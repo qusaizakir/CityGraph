@@ -21,7 +21,7 @@ public class CSVHelper {
 
 	private static final String PATH = Paths.get("").toAbsolutePath().toString();
 	private static final String EXT = ".csv";
-	private static ComponentNameProvider<City> vertexIdProvider = city -> city.getCity();
+	private static ComponentNameProvider<City> vertexIdProvider = city -> city.getName();
 
 	public static List<City> cityListByCountryName(String country, CSVCityLimit cityLimit) {
 		List<City> cityList;
@@ -75,6 +75,31 @@ public class CSVHelper {
 			System.out.println("Error: The number of cities is below 2. Lower the population limit and/or cities limit.");
 			System.exit(9);
 		}
+		return cityList;
+	}
+
+	public static List<City> cityListByLocationsInput(String country){
+
+
+		List<City> cityList;
+		String path = PATH + File.separator + "locations" + EXT;
+		try {
+			Reader reader = Files.newBufferedReader(Paths.get(path));
+			CsvToBean<City> csvToBean = new CsvToBeanBuilder(reader)
+					.withType(City.class)
+					.withIgnoreLeadingWhiteSpace(true)
+					.build();
+
+			cityList = csvToBean.parse();
+		} catch (IOException e) {
+			e.printStackTrace();
+			return null;
+		}
+
+		for (City c: cityList){
+			c.setIso2(country);
+		}
+
 		return cityList;
 	}
 
@@ -160,12 +185,15 @@ public class CSVHelper {
 
 		for (City c : cityList) {
 			LocationsCsvExportBean bean = new LocationsCsvExportBean();
-			bean.setCity(c.getCity());
+			bean.setCity(c.getName());
 			bean.setCountry(c.getCountry());
 			bean.setLat(c.getLat());
-			bean.setLng(c.getLng());
+			bean.setLng(c.getLon());
 			bean.setPopulation(c.getPopulation());
 			bean.setIso2(c.getIso2());
+
+			bean.setConflictDate(c.getConflictDate());
+			bean.setLocationType(c.getLocationType());
 
 			exportBeans.add(bean);
 		}

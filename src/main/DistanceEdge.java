@@ -18,11 +18,11 @@ public class DistanceEdge extends DefaultWeightedEdge {
 	}
 
 	public String getSourceCityName() {
-		return ((City) getSource()).getCity();
+		return ((City) getSource()).getName();
 	}
 
 	public String getTargetCityName() {
-		return ((City) getTarget()).getCity();
+		return ((City) getTarget()).getName();
 	}
 
 	@Override

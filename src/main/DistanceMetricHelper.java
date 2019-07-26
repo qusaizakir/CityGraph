@@ -19,6 +19,6 @@ public class DistanceMetricHelper {
 	}
 
 	public static double distanceLatLngByCity(City city1, City city2) {
-		return distanceLatLng(city1.getLat(), city2.getLat(), city1.getLng(), city2.getLng());
+		return distanceLatLng(city1.getLat(), city2.getLat(), city1.getLon(), city2.getLon());
 	}
 }
