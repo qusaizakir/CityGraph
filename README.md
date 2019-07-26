@@ -73,6 +73,21 @@ The format for these 3 files are as follows:
 
 '-h' for help
 
+**locations.csv**
+
+Additonal cities can also be included to override the city data from the worldcities.csv. This data must be included in the same location as the .JAR file and be named "locations.csv" only. 
+
+The cities with the same name (or within 10km straight line by lat/lon) will be counted as duplicates and removed. The cities from "locations.csv" will take priority.
+
+The format for "locations.csv" is:
+
+|name|country|lat|lon|location_type|conflict_date|population|
+|:-|:-|:-|:-|:-|:-|:-|
+|*string*|*string*|*double*|*double*|*string*|*string*|*integer*|
+
+'name', 'lat' & 'lon' are the only mandatory fields.
+
+
 **_Example_** 
 
 ``` java -jar citygraph.jar -a API_KEY us 5000 25 ```
