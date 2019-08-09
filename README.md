@@ -29,21 +29,21 @@ The application can output 3 .csv files
 * Straight.csv
 * Routes.csv
 
-The format for these 3 files are as follows:
+The format for these 3 files are as follows (where cc is countrycode):
 
-**Routes** 
+**cc_routes.csv** 
 
 |From City|To City|Driving Distance|Walking Distance|
 |:-|:-|:-|:-|
 |*string*|*string*|*kilometers*|*kilometers*|
 
-**Locations**
+**cc_locations.csv**
 
 |name|region|country|lat|lon|location_type|conflict_date|population|
 |:-|:-|:-|:-|:-|:-|:-|:-|
 |*string*|*string*|*string*|*double*|*double*|*string*|*string*|*integer*|
 
-**Straight**
+**cc_straight.csv**
 
 |From City|To City|Straight Line Distance|
 |:-|:-|:-|
@@ -72,6 +72,21 @@ The format for these 3 files are as follows:
 |-s       |*API_KEY COUNTRY_CODE POPULATION_LIMIT CITIES_LIMIT*   | Exports Locations.csv and StraightLine.csv with StraightLine metric|
 
 '-h' for help
+
+**locations.csv**
+
+Additonal cities can also be included to override the city data from the worldcities.csv. This data must be included in the same location as the .JAR file and be named "locations.csv" only. 
+
+The cities with the same name (or within 10km straight line by lat/lon) will be counted as duplicates and removed. The cities from "locations.csv" will take priority.
+
+The format for "locations.csv" is:
+
+|name|country|lat|lon|location_type|conflict_date|population|
+|:-|:-|:-|:-|:-|:-|:-|
+|*string*|*string*|*double*|*double*|*string*|*string*|*integer*|
+
+'name', 'lat' & 'lon' are the only mandatory fields.
+
 
 **_Example_** 
 
