@@ -10,6 +10,7 @@ import org.jgrapht.io.CSVFormat;
 import org.jgrapht.io.ComponentNameProvider;
 
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -55,7 +56,7 @@ public class CSVHelper {
 		List<City> cityList;
 		String path = PATH + File.separator + "worldcities" + EXT;
 		try {
-			Reader reader = Files.newBufferedReader(Paths.get(path));
+			Reader reader = Files.newBufferedReader(Paths.get(path), StandardCharsets.ISO_8859_1);
 			CsvToBean<City> csvToBean = new CsvToBeanBuilder(reader)
 					.withType(City.class)
 					.withIgnoreLeadingWhiteSpace(true)
@@ -92,7 +93,7 @@ public class CSVHelper {
 
 			cityList = csvToBean.parse();
 		} catch (IOException e) {
-			e.printStackTrace();
+			//e.printStackTrace();
 			return null;
 		}
 
