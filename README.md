@@ -1,6 +1,6 @@
 # City Graph
 
-City graph takes location data (cities) and creates a fully connected graph using different distance metrics as edges. These metrics include as driving, walking and straight-line distances. The country data is taken from SimpleMaps, OpenRouteService is used to calculate distances.
+City graph takes location data (cities) and creates a fully connected graph using different distance metrics as edges. These metrics include as driving, walking and straight-line distances. The country data is taken from GeoNames, OpenRouteService is used to calculate distances.
 
 ### Prerequisites
 
@@ -101,7 +101,7 @@ This would output Locations.csv, Routes.csv and StraightLine.csv for the top 25 
 
 ## Built With
 
-* [SimpleMaps](https://simplemaps.com/) - Provides country/name data (lat, lon, population)
+* [GeoNames](geonames.org) - Provides country/name data (lat, lon, population)
 * [OpenRouteService](http://openrouteservice.org/) - Provides API for distance metrics for driving & walking
 
 ## Authors
