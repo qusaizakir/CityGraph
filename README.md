@@ -22,7 +22,9 @@ Download Java JRE from [Oracle](https://www.oracle.com/technetwork/java/javase/d
 4. ```java -jar citygraph.jar -h``` to display command line parameters
 
 ## Usage
-The application uses the SimpleMaps worldcities.csv file to find cities from a particular country based off its country code. The 235 country codes that can be used are in [**this file**](https://github.com/qusaizakir/CityGraph/blob/master/listofcountrycodes.csv)
+The application uses the worldcities.csv file to find cities from a particular country based off its country code. The 235 country codes that can be used are in [**this file**](https://github.com/qusaizakir/CityGraph/blob/master/listofcountrycodes.csv)
+
+There is also a python script included in the release folder that uses Overpass API (OpenStreetMaps) to find cities either by [**country code**](https://github.com/qusaizakir/CityGraph/blob/master/listofcountrycodes.csv) or by a bounding box defined using GPS coordinates. The file will output a cities.csv that can be used either in conjunction with the offline worldcities.csv database or on its own.
 
 The application can output 3 .csv files
 * Locations.csv
@@ -67,17 +69,18 @@ The format for these 3 files are as follows (where cc is countrycode):
 | Command | Arguments                                             | Description  |
 | :-----: |:---------:                                             | :---------   |
 |-a       |*API_KEY COUNTRY_CODE POPULATION_LIMIT CITIES_LIMIT*   | Exports Locations.csv, Routes.csv, and StraightLine.csv with Walk, Drive and StraightLine distance metrics|
+|-al      |*API_KEY COUNTRY_CODE POPULATION_LIMIT CITIES_LIMIT*   | Exports Locations.csv, Routes.csv, and StraightLine.csv with Walk, Drive and StraightLine distance metrics using ONLY cities.csv file as input|
 |-d       |*API_KEY COUNTRY_CODE POPULATION_LIMIT CITIES_LIMIT*   | Exports Locations.csv and Routes.csv with Drive distance metric|
 |-w       |*API_KEY COUNTRY_CODE POPULATION_LIMIT CITIES_LIMIT*   | Exports Locations.csv and Routes.csv with Walk distance metric|
 |-s       |*API_KEY COUNTRY_CODE POPULATION_LIMIT CITIES_LIMIT*   | Exports Locations.csv and StraightLine.csv with StraightLine metric|
 
 '-h' for help
 
-**locations.csv**
+**cities.csv**
 
-Additonal cities can also be included to override the city data from the worldcities.csv. This data must be included in the same location as the .JAR file and be named "locations.csv" only. 
+Additonal cities can also be included to override the city data from the worldcities.csv. This data must be included in the same location as the .JAR file and be named "cities.csv" only. 
 
-The cities with the same name (or within 10km straight line by lat/lon) will be counted as duplicates and removed. The cities from "locations.csv" will take priority.
+The cities with the same name (or within 10km straight line by lat/lon) will be counted as duplicates and removed. The cities from "cities.csv" will take priority.
 
 The format for "locations.csv" is:
 
@@ -101,12 +104,15 @@ This would output Locations.csv, Routes.csv and StraightLine.csv for the top 25 
 
 ## Built With
 
-* [GeoNames](geonames.org) - Provides country/name data (lat, lon, population)
+* [GeoNames](geonames.org) - Provides offline csv of country/name data (lat, lon, population)
 * [OpenRouteService](http://openrouteservice.org/) - Provides API for distance metrics for driving & walking
+* [Overpass API](http://overpass-api.de/) - Provides API to access city data (lat, lon, population)
 
 ## Authors
 
 **Qusai Zakir** - [Portfolio](https://qusaizakir.uk)
+**Christoph Schweimer** - Overpass API python script
+**Elke Schlager** - Overpass API python script
 
 ## License
 
