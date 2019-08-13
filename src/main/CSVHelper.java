@@ -14,6 +14,8 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import static org.jgrapht.io.CSVFormat.Parameter.EDGE_WEIGHTS;
@@ -70,6 +72,7 @@ public class CSVHelper {
 
 		System.out.println("The number of cities before filtering: " + cityList.size());
 		removeCitiesNotInCountry(cityList, country);
+		findAndCombineFromLocationsCity(cityList, country);
 		removeCitiesBasedOnFilter(cityList, cityLimit);
 		System.out.println("The number of cities after filtering: " + cityList.size());
 		if (cityList.size() < 2) {
@@ -79,11 +82,11 @@ public class CSVHelper {
 		return cityList;
 	}
 
-	public static List<City> cityListByLocationsInput(String country){
+	public static List<City> cityListByCitiesInput(String country){
 
 
 		List<City> cityList;
-		String path = PATH + File.separator + "locations" + EXT;
+		String path = PATH + File.separator + "cities" + EXT;
 		try {
 			Reader reader = Files.newBufferedReader(Paths.get(path));
 			CsvToBean<City> csvToBean = new CsvToBeanBuilder(reader)
@@ -101,6 +104,7 @@ public class CSVHelper {
 			c.setIso2(country);
 		}
 
+		System.out.println("Cities in cities.csv: " + cityList.size());
 		return cityList;
 	}
 
@@ -230,12 +234,21 @@ public class CSVHelper {
 		return exportBeans;
 	}
 
-	private static List<City> removeCitiesBasedOnFilter(List<City> cityList, CSVCityLimit cityLimit) {
+	public static List<City> removeCitiesBasedOnFilter(List<City> cityList, CSVCityLimit cityLimit) {
 		int pop = cityLimit.getPopulation();
 		int limit = cityLimit.getCityLimit();
 
 		//Remove cities below pop level
-		cityList.removeIf(c -> c.getPopulation() < pop && c.getPopulation() != 0);
+		cityList.removeIf(c -> c.getPopulation() < pop);
+
+		//Sort the list by population
+		Collections.sort(cityList, (o1, o2) -> {
+			if (o1.getPopulation() == o2.getPopulation()) {
+				return 0;
+			} else {
+				return o2.getPopulation() < o1.getPopulation() ? -1 : 1;
+			}
+		});
 
 		//If cities over limit, then add only limited number to new list (highest pop first)
 		if (cityList.size() > limit) {
@@ -249,6 +262,25 @@ public class CSVHelper {
 		} else {
 			return cityList;
 		}
+
+	}
+
+	//Look for locations.csv file in folder that contains additional/duplicate cities with more accurate data
+	//Combine them to create a new list
+	private static void findAndCombineFromLocationsCity(List<City> cityList, String countryCode){
+		List<City> betterCityList = CSVHelper.cityListByCitiesInput(countryCode);
+		if(betterCityList == null){
+			System.out.println("locations.csv not found");
+			return;
+		}
+
+		//Remove all the duplicate cities from cityList, then add betterCityList to cityList
+		System.out.println("Found locations.csv...");
+		System.out.println("Removing duplicates and combining lists");
+		System.out.println("The number of cities before combining: " + cityList.size());
+		cityList.removeAll(betterCityList);
+		cityList.addAll(betterCityList);
+		System.out.println("The number of cities after combining: " + cityList.size());
 
 	}
 }
